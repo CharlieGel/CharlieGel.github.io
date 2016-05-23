@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+  <script>
+
+        var homeChances = 0.0;
+        var homeTeam = "home";
+        var awayTeam = "away";
+        var url;
+        var tableData=[["Score Differential", "Time Left", "Probability of Winning"]];
+        var difference=0.0;
+        var timeLeftInGame=60.0;
+        var graph;
+        var xPadding = 30;
+        var yPadding = 30;
+        var data = [{x:0, y:homeChances}];
+        var table = document.createElement('table');
+        var tableBody = document.createElement('tbody');
+
+        function setVars(){
+            var beginning="file:///Users/charliegelman/Documents/Live%20Score%20Tracker/Redirect.html?team1=";
+            var justEnding=document.location.href.substring(beginning.length);
+            url=document.location.href;
+            var chancesString;
+            for (var i=0; i<justEnding.length; i++)
+                if(justEnding.charAt(i)=='&'){
+                  homeTeam=justEnding.substring(0, i);
+                  break
+                }
+            for (var j=homeTeam.length+8; j<justEnding.length; j++)
+                if(justEnding.charAt(j)=='&'){
+                  awayTeam=justEnding.substring(homeTeam.length+7, j);
+                  break;
+                }
+            for(var k=homeTeam.length+16+awayTeam.length; k<justEnding.length; k++)
+                if(justEnding.charAt(k)=='&'){
+                  chancesString=justEnding.substring(homeTeam.length+16+awayTeam.length, k);
+                  break;
+                }
+            var xString;
+            var yString;
+            var m=homeTeam.length+31+awayTeam.length+chancesString.length;
+            var startOfX=m;
+            homeChances=parseFloat(chancesString);
+            if(homeChances>=0.5){
+              tableData.push(["0", "60", chancesString+" in favor of the "+homeTeam]);
+            }
+            else {
+              tableData.push(["0", "60", (1-homeChances).toString()+" in favor of the "+awayTeam]);
+            }
+            createTable(tableData);
+        }
+
+        function setDifference(){
+          difference=parseFloat(document.getElementById("differential").value);
+        }
+
+        function setTimeLeftInGame(){
+          timeLeftInGame=parseFloat(document.getElementById("timeleft").value);
+        }
+
+        function onSubmit1(){
+          var row = table.insertRow();
+          prob=getProbability(difference, timeLeftInGame);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3 = row.insertCell(2);
+          cell1.innerHTML = difference.toString();
+          cell2.innerHTML = timeLeftInGame.toString();
+          if(prob>=0.5){
+            cell3.innerHTML = prob.toFixed(3)+" in favor of the "+homeTeam;
+          }
+          else {
+            cell3.innerHTML = (1-prob).toFixed(3)+" in favor of the "+awayTeam;
+          }
+          data.push({x:difference, y:getProbability(difference, timeLeftInGame)});
+        }
+
+        function getProbability(dif, tR){
+          //var lineCalculatedFromChances=Math.pow((homeChances/0.47478), (1/.242));
+          var lineCalculatedFromChances=(10*homeChances-5)*-3
+          var stanDev=(13.45/(Math.sqrt(60/tR)));
+          var oppositeOfMean=lineCalculatedFromChances*(tR/60);
+          var pVal = (1-GetZPercent((dif*(-1)+.5+oppositeOfMean)/stanDev)) + (0.5 * ((GetZPercent(((dif*(-1))+.5+oppositeOfMean)/stanDev)) - (GetZPercent(((dif*(-1))-.5+oppositeOfMean)/stanDev))));
+          return pVal;
+        }
+
+        function GetZPercent(z)
+        {
+          if ( z < -6.5)
+            return 0.0;
+          if( z > 6.5)
+            return 1.0;
+
+          var factK = 1;
+          var sum = 0;
+          var term = 1;
+          var k = 0;
+          var loopStop = Math.exp(-23);
+          while(Math.abs(term) > loopStop){
+            term = .3989422804 * Math.pow(-1,k) * Math.pow(z,k) / (2 * k + 1) / Math.pow(2,k) * Math.pow(z,k+1) / factK;
+            sum += term;
+            k++;
+            factK *= k;
+          }
+          sum += 0.5;
+          return sum;
+        }
+
+        // Return the x pixel for a graph point
+        function getXPixel(val) {
+            return ((graph.width() - xPadding) / data.length) * val + (xPadding * 1.5);
+        }
+
+        // Return the y pixel for a graph point
+        function getYPixel(val) {
+            return graph.height() - (((graph.height() - yPadding) / 1) * val) - yPadding;
+        }
+
+        $(document).ready(function() {
+            graph = $('#graph');
+            var c = graph[0].getContext('2d');
+
+            c.lineWidth = 2;
+            c.strokeStyle = '#333';
+            c.font = 'italic 8pt sans-serif';
+            c.textAlign = "center";
+
+            // Draw the axises
+            c.beginPath();
+            c.moveTo(xPadding, 0);
+            c.lineTo(xPadding, graph.height() - yPadding);
+            c.lineTo(graph.width(), graph.height() - yPadding);
+            c.stroke();
+
+            // Draw the X value texts
+          //if(data.length>1){
+            for(var i = 0; i < data.length; i ++) {
+                c.fillText(data[i].X, getXPixel(i), graph.height() - yPadding + 20);
+            }
+
+            // Draw the Y value texts
+            c.textAlign = "right"
+            c.textBaseline = "middle";
+
+            for(var i = 0; i < 100; i += 10) {
+                c.fillText(i, xPadding - 10, getYPixel(i));
+            }
+
+            c.strokeStyle = '#f00';
+
+            // Draw the line graph
+            c.beginPath();
+            c.moveTo(getXPixel(0), getYPixel(data[0].Y));
+            for(var i = 1; i < data.length; i ++) {
+                c.lineTo(getXPixel(i), getYPixel(data[i].Y));
+            }
+            c.stroke();
+
+            c.fillStyle = '#333';
+
+            for(var i = 0; i < data.length; i ++) {
+              c.beginPath();
+              c.arc(getXPixel(i), getYPixel(data[i].Y), 4, 0, Math.PI * 2, true);
+              c.fill();
+            }
+        });
+
+        function createTable(tableData) {
+          tableData.forEach(function(rowData) {
+            var row = document.createElement('tr');
+
+            rowData.forEach(function(cellData) {
+              var cell = document.createElement('td');
+              cell.appendChild(document.createTextNode(cellData));
+              row.appendChild(cell);
+            });
+            tableBody.appendChild(row);
+          });
+          table.appendChild(tableBody);
+          document.body.appendChild(table);
+        }
+
+
+  </script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1404.34">
+  <link rel="stylesheet" type="text/css" href="LiveScoreTrackerStyleSheet.css">
+</head>
+<body onload=setVars()>
+    <div id="top">
+    <p class="p1"><br><marquee behavior="alternate" scrollamount="15">This is Porcidermetrics</marquee><br></p>
+    <p class="p3">By Charlie Gelman</p><br><br>
+    </div>
+    <div id="left">
+    <p class="p2"><br>
+    Score differential: (Team 1 - Team 2)<br>
+    <input type="text" id="differential" name="differential" onchange="setDifference()" value="0"><br><br>
+    Total time remaining:<br>
+    <input type="text" id="timeleft" name="timeleft" onchange="setTimeLeftInGame()" value="60"><br><br>
+    <button type="submit" onclick="onSubmit1()">Submit</button><br>
+    <canvas id="graph" width="300" height="200" background-color: lightgrey>
+    </canvas>
+    <div id="right">
+</body>
+</html>
