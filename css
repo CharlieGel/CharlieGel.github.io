@@ -1,0 +1,56 @@
+
+#top {
+    width: 100%;
+    height: 200px;
+    background-color: lightgrey;
+}
+#left {
+    width: 70%;
+    height: 1000%;
+    float:left;
+}
+#right {
+    background-color: lightgrey;
+    float: right;
+    height: 1000%;
+    width: 30%;
+}
+
+
+body{
+  background-image: url("/Users/charliegelman/Documents/Live Score Tracker/DSC_2984 copy.jpg");
+  background-size: cover;
+  background-repeat: repeat;
+  background-position: center;
+}
+
+table, th, td{
+    border: 1px;
+    background-color: lightgrey;
+    border-color: black;
+}
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+input,button {
+    background-color: lightgrey;
+    border-color: lightgrey;
+    font: 36px sans-serif;
+}
+
+div{
+    color: lightgrey;
+    font: 16.0px Arial;
+}
+
+p.p1 {
+  margin: 0.0px 0.0px 0.0px 0.0px; color: rgb(0, 88, 88); background-color:lightgrey; font: 50.0px Helvetica; text-align:center;
+}
+
+p.p2 {
+  margin: 0.0px 0.0px 0.0px 0.0px; color: lightgrey; font: 16.0px Times
+}
+p.p3 {
+  margin: 0.0px 0.0px 0.0px 0.0px; color: rgb(0, 88, 88); background-color:lightgrey; font: 30.0px Helvetica; text-align:center;
+}
