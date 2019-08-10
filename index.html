@@ -336,17 +336,6 @@
 "Jordan Howard"]
 
         function get_round(player, dict, is_keeper){
-          if (player == 'Batman'){
-            window.open('https://youtu.be/E679XJellLs')
-            return
-          } elseif (player == 'Bane'){
-            window.open('https://www.youtube.com/watch?v=IkMPZ7WeDck')
-            return
-          } elseif (player == 'Nick Foles'){
-            window.open('https://youtu.be/_XmhBaUdges')
-            return
-          }
-
           start = ''
           if (is_keeper){
             start = 'Keeper! '
@@ -358,6 +347,17 @@
         }
 
         function enterplayer(){
+          if (player == 'Batman'){
+            window.open('https://youtu.be/E679XJellLs')
+            return
+          } else if (player == 'Bane'){
+            window.open('https://www.youtube.com/watch?v=IkMPZ7WeDck')
+            return
+          } else if (player == 'Nick Foles'){
+            window.open('https://youtu.be/_XmhBaUdges')
+            return
+          }
+
           player = document.getElementById("player").value
           console.log(player)
 
@@ -365,7 +365,7 @@
             console.log('Keeper!')
             pick = get_round(player, seventeen_dict, true)
           }
-          elseif(player == 'Charlie Gelman'){
+          else if(player == 'Charlie Gelman'){
             pick = 'THE GOAT'
           }
           else {
