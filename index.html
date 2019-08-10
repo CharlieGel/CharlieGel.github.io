@@ -347,19 +347,24 @@
         }
 
         function enterplayer(){
+          player = document.getElementById("player").value
+          console.log(player)
+
           if (player == 'Batman'){
+            console.log('WHERRREESSSS RACHELLLLL')
             window.open('https://youtu.be/E679XJellLs')
             return
-          } else if (player == 'Bane'){
+          }
+          if (player == 'Bane'){
+            console.log('You think darkness is your ally?')
             window.open('https://www.youtube.com/watch?v=IkMPZ7WeDck')
             return
-          } else if (player == 'Nick Foles'){
+          }
+          if (player == 'Nick Foles'){
+            console.log('Big Dick Nick!')
             window.open('https://youtu.be/_XmhBaUdges')
             return
           }
-
-          player = document.getElementById("player").value
-          console.log(player)
 
           if (keepers.includes(player)){
             console.log('Keeper!')
