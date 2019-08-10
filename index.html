@@ -336,6 +336,17 @@
 "Jordan Howard"]
 
         function get_round(player, dict, is_keeper){
+          if (player == 'Batman'){
+            window.open('https://youtu.be/E679XJellLs')
+            return
+          } elseif (player == 'Bane'){
+            window.open('https://www.youtube.com/watch?v=IkMPZ7WeDck')
+            return
+          } elseif (player == 'Nick Foles'){
+            window.open('https://youtu.be/_XmhBaUdges')
+            return
+          }
+
           start = ''
           if (is_keeper){
             start = 'Keeper! '
@@ -353,6 +364,9 @@
           if (keepers.includes(player)){
             console.log('Keeper!')
             pick = get_round(player, seventeen_dict, true)
+          }
+          elseif(player == 'Charlie Gelman'){
+            pick = 'THE GOAT'
           }
           else {
             pick = get_round(player, eighteen_dict, false)
